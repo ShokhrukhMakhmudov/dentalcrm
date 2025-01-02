@@ -1,5 +1,5 @@
-import { Button, Space, Table, TableProps, Tag } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, Space, Table, TableProps } from "antd";
+import { useEffect, useState } from "react";
 import { useAuthContext } from "../../context";
 
 interface DataType {
@@ -18,6 +18,8 @@ export default function Patients() {
     setOpen: (state: boolean) => setModal((prev) => ({ ...prev, open: state })),
     type: "create",
   });
+  console.log(modal);
+
   const [data, setData] = useState([
     {
       id: 1,
@@ -41,12 +43,12 @@ export default function Patients() {
     async function fetchServices() {
       const baseUrl = (import.meta as any).env.VITE_BASE_URL;
 
-      const req = await fetch(baseUrl + `/api/service/clinic/${user?.id}`);
+      const req = await fetch(baseUrl + `/api/client/all/clinic/${user?.id}`);
 
       const res = await req.json();
 
-      if (res.length) {
-        setData(res);
+      if (res?.content) {
+        setData(res?.content);
       }
     }
 

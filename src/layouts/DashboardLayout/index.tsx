@@ -3,18 +3,13 @@ import {
   AntDesignOutlined,
   AppstoreOutlined,
   BellOutlined,
-  CheckOutlined,
-  CustomerServiceOutlined,
   ExperimentOutlined,
   LogoutOutlined,
-  MedicineBoxOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  SettingOutlined,
   TeamOutlined,
   UploadOutlined,
   UserOutlined,
-  VideoCameraOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -58,12 +53,12 @@ export default function DashboardLayout() {
     },
     {
       key: "2",
-      label: <Link to="/dashboard/profile">Profile</Link>,
+      label: <Link to="/dashboard">Profile</Link>,
       icon: <UserOutlined />,
     },
     {
       key: "3",
-      label: <Link to="/dashboard/billing">Billing</Link>,
+      label: <Link to="/dashboard">Billing</Link>,
       icon: <UploadOutlined />,
     },
     {

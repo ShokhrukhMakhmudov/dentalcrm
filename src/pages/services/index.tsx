@@ -1,7 +1,8 @@
-import { Button, Space, Table, TableProps, Tag } from "antd";
+import { Button, Popover, Space, Table, TableProps, Tag } from "antd";
 import { useEffect, useState } from "react";
 import ServicesModal from "../../components/ServicesModal";
 import { useAuthContext } from "../../context";
+import Loader from "../../components/Loader";
 
 interface DataType {
   id: number;
@@ -10,33 +11,74 @@ interface DataType {
   description: string;
   consumables: string;
 }
+
 export default function Services() {
   const {
     state: { user },
   } = useAuthContext();
-  const [modal, setModal] = useState({
+
+  const [modal, setModal] = useState<{
+    open: boolean;
+    setOpen: (state: boolean) => void;
+    type: "create" | "edit";
+    data: {} | null;
+  }>({
     open: false,
     setOpen: (state: boolean) => setModal((prev) => ({ ...prev, open: state })),
     type: "create",
+    data: null,
   });
-  const [data, setData] = useState([
-    {
-      id: 4,
-      name: "Чистка зубов",
-      price: 150000,
-      clinic: {
-        id: 3,
-        name: "TEST",
-        phone: "+998919998877",
-        codeword: "test",
-        login: "test",
-        password: "12345",
-      },
-      description: "Чистка зубов от камней",
-      consumables: "очиститель,салфетки",
-      deletedAt: "1970-01-01T00:00:00.000+00:00",
-    },
-  ]);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  function ServiceActions({ record }: { record: DataType }) {
+    const [open, setOpen] = useState(false);
+
+    const hide = () => {
+      setOpen(false);
+    };
+
+    const handleOpenChange = (newOpen: boolean) => {
+      setOpen(newOpen);
+    };
+
+    return (
+      <Space size="middle" className="w-fit" key={record.id}>
+        <Button
+          type="default"
+          onClick={() =>
+            setModal((prev) => ({
+              ...prev,
+              open: true,
+              type: "edit",
+              data: record,
+            }))
+          }>
+          Edit
+        </Button>
+        <Popover
+          content={
+            <div>
+              <h2 className="mb-2 text-lg font-semibold">Delete service</h2>
+              <p className="mb-5">
+                Are you sure you want <br /> to delete this service?
+              </p>
+              <div className="flex gap-2">
+                <Button type="primary" onClick={() => DeleteService(record.id)}>
+                  Yes
+                </Button>
+                <Button onClick={hide}>No</Button>
+              </div>
+            </div>
+          }
+          trigger="click"
+          open={open}
+          onOpenChange={handleOpenChange}>
+          <Button type="primary">Delete</Button>
+        </Popover>
+      </Space>
+    );
+  }
 
   useEffect(() => {
     async function fetchServices() {
@@ -52,7 +94,26 @@ export default function Services() {
     }
 
     fetchServices();
-  }, []);
+  }, [modal.data]);
+
+  async function DeleteService(id: number) {
+    const baseUrl = (import.meta as any).env.VITE_BASE_URL;
+    setLoading(true);
+
+    try {
+      const req = await fetch(baseUrl + `/api/service/${id}`, {
+        method: "DELETE",
+      });
+
+      if (req.status === 200) {
+        alert("Service deleted");
+      }
+    } catch (error) {
+      alert("Error " + error);
+    }
+
+    setLoading(false);
+  }
 
   const columns: TableProps<DataType>["columns"] = [
     {
@@ -100,16 +161,13 @@ export default function Services() {
     {
       title: "Action",
       key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <Button type="default" onClick={() => console.log(record)}>
-            Edit
-          </Button>
-          <Button type="primary">Delete</Button>
-        </Space>
-      ),
+      render: (_, record) => <ServiceActions record={record} />,
     },
   ];
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -120,15 +178,14 @@ export default function Services() {
         </Button>
       </div>
       <Table<DataType>
+        pagination={{
+          pageSize: 10,
+        }}
         columns={columns}
         dataSource={data}
         rowKey={(record) => record.id}
       />
-      <ServicesModal
-        open={modal.open}
-        setOpen={modal.setOpen}
-        type={modal.type}
-      />
+      <ServicesModal modal={modal} setModal={setModal} />
     </>
   );
 }

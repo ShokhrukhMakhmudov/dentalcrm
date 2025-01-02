@@ -69,7 +69,6 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   authRoute,
   DashboardRoute,
-
   ServicesRoute,
   PatientsRoute,
   DashboardMainRoute,

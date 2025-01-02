@@ -1,20 +1,39 @@
-import { useState } from "react";
-import { Button, Form, Input, Modal, Select, SelectProps, Space } from "antd";
+import { useEffect, useState } from "react";
+import { Form, Input, Modal, Select, SelectProps } from "antd";
 import { useAuthContext } from "../../context";
 
-export default function ServicesModal({ open, setOpen, type }: any) {
+export default function ServicesModal({
+  modal: { open, setOpen, type, data },
+  setModal,
+}: any) {
   const { state } = useAuthContext();
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState("Content of the modal");
+  // const [modalText, setModalText] = useState("Content of the modal");
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    if (type === "edit" && data) {
+      form.setFieldsValue({
+        name: data.name,
+        price: data.price,
+        description: data.description,
+        consumables: data.consumables.split(","),
+      });
+    }
+  }, [type, data]);
   const handleCreateSubmit = async () => {
     setConfirmLoading(true);
 
     const baseUrl = (import.meta as any).env.VITE_BASE_URL;
-    console.log(form.getFieldsValue(), state.user);
 
-    const data = {
+    const sendData: {
+      name: string;
+      price: number;
+      description: string;
+      consumables: string;
+      clinic: { id?: string; name?: string; email?: string };
+      id?: number;
+    } = {
       name: form.getFieldsValue().name,
       price: Number(form.getFieldsValue().price),
       description: form.getFieldsValue().description,
@@ -24,16 +43,22 @@ export default function ServicesModal({ open, setOpen, type }: any) {
       },
     };
 
+    if (type === "edit") sendData["id"] = data.id;
+
     const req = await fetch(baseUrl + "/api/service/save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(sendData),
     });
 
-    const res = await req?.json();
-
-    if (res.id) {
-      // message success
+    if (req.status === 200) {
+      // window.location.reload();
+      setModal((prev: any) => ({
+        ...prev,
+        open: false,
+        type: "create",
+        data: null,
+      }));
     }
     setOpen(false);
     setConfirmLoading(false);

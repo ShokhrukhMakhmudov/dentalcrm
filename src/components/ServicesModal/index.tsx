@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Form, Input, Modal, Select, SelectProps } from "antd";
 import { useAuthContext } from "../../context";
+import { baseUrl } from "../../config";
 
 export default function ServicesModal({
   modal: { open, setOpen, type, data },
@@ -23,8 +24,6 @@ export default function ServicesModal({
   }, [type, data]);
   const handleCreateSubmit = async () => {
     setConfirmLoading(true);
-
-    const baseUrl = (import.meta as any).env.VITE_BASE_URL;
 
     const sendData: {
       name: string;

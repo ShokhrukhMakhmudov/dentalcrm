@@ -3,6 +3,7 @@ import { Button, Form, Input } from "antd";
 import { useAuthContext } from "../../context";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { baseUrl } from "../../config";
 
 export default function Login() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -11,8 +12,6 @@ export default function Login() {
   const onFinish = async (values: any) => {
     setLoading(true);
     console.log("Success:", values);
-
-    const baseUrl = (import.meta as any).env.VITE_BASE_URL;
 
     const req = await fetch(
       baseUrl +

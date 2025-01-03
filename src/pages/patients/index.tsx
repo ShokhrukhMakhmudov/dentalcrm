@@ -1,6 +1,7 @@
 import { Button, Space, Table, TableProps } from "antd";
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../../context";
+import { baseUrl } from "../../config";
 
 interface DataType {
   id: number;
@@ -41,8 +42,6 @@ export default function Patients() {
 
   useEffect(() => {
     async function fetchServices() {
-      const baseUrl = (import.meta as any).env.VITE_BASE_URL;
-
       const req = await fetch(baseUrl + `/api/client/all/clinic/${user?.id}`);
 
       const res = await req.json();

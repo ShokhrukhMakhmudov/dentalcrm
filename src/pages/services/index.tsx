@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ServicesModal from "../../components/ServicesModal";
 import { useAuthContext } from "../../context";
 import Loader from "../../components/Loader";
+import { baseUrl } from "../../config";
 
 interface DataType {
   id: number;
@@ -82,8 +83,6 @@ export default function Services() {
 
   useEffect(() => {
     async function fetchServices() {
-      const baseUrl = (import.meta as any).env.VITE_BASE_URL;
-
       const req = await fetch(baseUrl + `/api/service/clinic/${user?.id}`);
 
       const res = await req.json();
@@ -97,7 +96,6 @@ export default function Services() {
   }, [modal.data]);
 
   async function DeleteService(id: number) {
-    const baseUrl = (import.meta as any).env.VITE_BASE_URL;
     setLoading(true);
 
     try {

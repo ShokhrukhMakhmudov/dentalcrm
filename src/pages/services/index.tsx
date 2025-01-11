@@ -1,6 +1,6 @@
 import { Button, Popover, Space, Table, TableProps, Tag } from "antd";
 import { useEffect, useState } from "react";
-import ServicesModal from "../../components/ServicesModal";
+import ServicesModal from "../../components/Modals/ServicesModal";
 import { useAuthContext } from "../../context";
 import Loader from "../../components/Loader";
 import { baseUrl } from "../../config";
